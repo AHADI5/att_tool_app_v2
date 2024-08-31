@@ -463,15 +463,7 @@ class DatabaseConfig {
     return attendanceList;
   }
 
-  Future<void>  insertApi(String api) async{
-    final db = await database  ;
-    db.insert(
-        'tapi',
-      {
-        'url' : api
-      }
-    );
-  }
+
 
   Future<void> insertOrUpdateApi(String api) async {
     final db = await database;
@@ -495,5 +487,21 @@ class DatabaseConfig {
       );
     }
   }
+
+  Future<String> getApiUrl() async {
+    final db = await database;
+
+    // Query the database to check if there is an existing record
+    final List<Map<String, dynamic>> existingRecords = await db.query('tapi');
+
+    if (existingRecords.isNotEmpty) {
+      // Return the URL from the first record
+      return existingRecords.first['url'] as String;
+    } else {
+      // Return a default URL or an empty string if no record exists
+      return "http://default-url.com"; // You can customize this default URL
+    }
+  }
+
 
 }

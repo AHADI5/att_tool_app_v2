@@ -26,6 +26,8 @@ class ValidateAndProceedButton extends StatelessWidget {
         onPressed: () async {
           await _validateAndProceed(context);
         },
+        backgroundColor: Colors.blueGrey,
+        foregroundColor: Colors.white,
         child: const Icon(Icons.qr_code_scanner),
       );
     } else {
@@ -38,7 +40,7 @@ class ValidateAndProceedButton extends StatelessWidget {
               await _validateAndProceed(context);
             },
           ),
-          const Text("Rescan")
+          const Text("Rescan" , style: TextStyle(color: Colors.blue),)
         ],
       );
     }

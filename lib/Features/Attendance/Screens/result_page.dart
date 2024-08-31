@@ -113,7 +113,7 @@ class _VerificationResultPageState extends State<VerificationResultPage> {
         title: const Text('Attendance Recorded'),
       ),
       body: _isLoading
-          ? Center(child: CircularProgressIndicator())
+          ? const Center(child: CircularProgressIndicator())
           : Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -151,9 +151,14 @@ class _VerificationResultPageState extends State<VerificationResultPage> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
-              "${widget.selectedElement.name} | ${widget.selectedElement.cmiHours} hours",
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+            Expanded(
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Text(
+                  "${widget.selectedElement.name} | ${widget.selectedElement.cmiHours} hours",
+                  style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+                ),
+              ),
             ),
             const Icon(Icons.school, color: Colors.blueAccent),
           ],
@@ -192,12 +197,12 @@ class _VerificationResultPageState extends State<VerificationResultPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              "$currentDateTime",
+              currentDateTime,
               style: TextStyle(fontSize: 16, color: Colors.grey[700]),
             ),
             const SizedBox(height: 10),
             Text(
-              "Student Mat: ${widget.scannedCode}",
+              "Student : ${widget.scannedCode}",
               style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
           ],

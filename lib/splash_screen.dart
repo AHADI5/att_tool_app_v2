@@ -1,28 +1,58 @@
-
 import 'package:flutter/material.dart';
 import 'package:project2/temp_constant.dart';
 import 'dart:async';
+import 'Features/Attendance/Models/unite_enseignement.dart';
 import 'Features/Attendance/Services/synchronisation.dart';
+import 'db_init.dart';
 import 'error_page.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
 
   @override
-  _SplashScreenState createState() => _SplashScreenState();
+  SplashScreenState createState() => SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen> {
+class SplashScreenState extends State<SplashScreen> {
+  DatabaseConfig db = DatabaseConfig.instance;
+
   @override
   void initState() {
     super.initState();
-    _startSynchronization();
+    _checkTableAndProceed();
+  }
+
+  Future<void> _checkTableAndProceed() async {
+    try {
+      // Check if the UniteEnseign table has data
+      List<UniteEnseignement> uniteEnseignements = await db.getAllUniteEnseignements();
+
+      if (uniteEnseignements.isNotEmpty) {
+        // If the table is not empty, go directly to the home page
+        if (!mounted) return;
+        Navigator.pushReplacementNamed(context, '/home');
+      } else {
+        // If the table is empty, start synchronization
+        await _startSynchronization();
+      }
+    } catch (error) {
+      // Handle error, e.g., navigate to the error page
+      if (!mounted) return;
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const SyncErrorPage(),
+        ),
+      );
+    }
   }
 
   Future<void> _startSynchronization() async {
     try {
+      String currentApi = await db.getApiUrl();
+
       // Start the synchronization process
-      await Synchronisation().syncUE(baseApi);
+      await Synchronisation().syncUE(currentApi);
 
       // Only navigate if the widget is still mounted
       if (!mounted) return;
@@ -42,7 +72,6 @@ class _SplashScreenState extends State<SplashScreen> {
       );
     }
   }
-
 
   @override
   Widget build(BuildContext context) {

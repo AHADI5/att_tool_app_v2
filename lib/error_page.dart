@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:path/path.dart';
+import 'package:project2/db_init.dart';
 import 'Features/Attendance/Services/synchronisation.dart';
 
 class SyncErrorPage extends StatefulWidget {
@@ -11,7 +11,21 @@ class SyncErrorPage extends StatefulWidget {
 
 class _SyncErrorPageState extends State<SyncErrorPage> {
   bool _showUrlField = false; // To toggle the visibility of the URL input field
-  final TextEditingController _urlController = TextEditingController(text: "http://172.19.250.160:8080/api/v1/ulpgl");
+  final DatabaseConfig db = DatabaseConfig.instance;
+  final TextEditingController _urlController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _loadApiUrl(); // Load the API URL when the widget is initialized
+  }
+
+  Future<void> _loadApiUrl() async {
+    String apiUrl = await db.getApiUrl();
+    setState(() {
+      _urlController.text = apiUrl; // Set the TextEditingController's text
+    });
+  }
 
   Future<void> _startSynchronization(BuildContext context) async {
     try {
@@ -29,6 +43,21 @@ class _SyncErrorPageState extends State<SyncErrorPage> {
         const SnackBar(content: Text("Échec de la synchronisation. Réessayez.")),
       );
     }
+  }
+
+  void _onRegisterPressed() async {
+    // Save or update the URL in the database
+    await db.insertOrUpdateApi(_urlController.text);
+
+    // Show a confirmation message
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text("URL enregistrée avec succès")),
+    );
+
+    // Hide the URL field after saving
+    setState(() {
+      _showUrlField = false;
+    });
   }
 
   @override
@@ -53,12 +82,21 @@ class _SyncErrorPageState extends State<SyncErrorPage> {
               ),
               const SizedBox(height: 20),
               if (_showUrlField) // Toggle URL input field
-                TextField(
-                  controller: _urlController,
-                  decoration: const InputDecoration(
-                    labelText: "Nouvelle URL de synchronisation",
-                    border: OutlineInputBorder(),
-                  ),
+                Column(
+                  children: [
+                    TextField(
+                      controller: _urlController,
+                      decoration: const InputDecoration(
+                        labelText: "Nouvelle URL de synchronisation",
+                        border: OutlineInputBorder(),
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    ElevatedButton(
+                      onPressed: _onRegisterPressed, // Register button pressed
+                      child: const Text("Enregistrer"),
+                    ),
+                  ],
                 ),
               const SizedBox(height: 20),
               Row(
@@ -82,10 +120,10 @@ class _SyncErrorPageState extends State<SyncErrorPage> {
                   Column(
                     children: [
                       IconButton(
-                        icon: const Icon(Icons.link, size: 40),
+                        icon: const Icon(Icons.edit, size: 40),
                         onPressed: () {
                           setState(() {
-                            _showUrlField = !_showUrlField; // Toggle visibility of URL input
+                            _showUrlField = !_showUrlField; // Toggle visibility of URL input and Register button
                           });
                         },
                       ),

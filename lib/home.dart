@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
@@ -28,6 +27,7 @@ class _HomeScreenState extends State<HomeScreen> {
   SchoolYear? selectedYear;
   bool isLoadingElements = false;
   bool isLoadingYears = true;
+  DatabaseConfig db = DatabaseConfig.instance;
 
   SchoolYear? currentSchoolYear;
   int currentIndex = 0;
@@ -67,8 +67,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> _startSynchronization() async {
     try {
+      String currentApi = await db.getApiUrl();
+
       // Start the synchronization process
-      await Synchronisation().syncUE(baseApi);
+      await Synchronisation().syncUE(currentApi);
 
       // Only navigate if the widget is still mounted
       if (!mounted) return;
@@ -88,8 +90,6 @@ class _HomeScreenState extends State<HomeScreen> {
       );
     }
   }
-
-
 
   Future<List<ElementConst>> _getElementsAsync(String promotion) async {
     setState(() {
@@ -170,9 +170,8 @@ class _HomeScreenState extends State<HomeScreen> {
               tooltip: 'Sync Unité enseignement',
               onPressed: () {
                 //Start synchronisation
-                _startSynchronization() ;
-                print("syncing") ;
-
+                _startSynchronization();
+                print("syncing");
               })
         ],
         elevation: 0,
@@ -189,14 +188,19 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text(
-                      'No school years found. Please add a school year.',
-                      style: TextStyle(fontSize: 18, color: Colors.red),
+                    const Center(
+                      child: Text(
+                        'Aucune anne scolaire trouvée',
+                        style: TextStyle(fontSize: 10, color: Colors.grey),
+                      ),
                     ),
-                    SizedBox(height: 20),
+                    const SizedBox(height: 20),
                     ElevatedButton(
                       onPressed: _openSchoolYearDialog,
-                      child: Text('Add School Year'),
+                      style: ButtonStyle(
+                          backgroundColor:
+                              WidgetStateProperty.all<Color>(Colors.blue)),
+                      child: const Text('Ajouter une Année'),
                     ),
                   ],
                 ),
@@ -226,7 +230,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               dropdownSearchDecoration: InputDecoration(
                                 labelText: "Sélectionnez une Promotion",
                                 contentPadding:
-                                    EdgeInsets.fromLTRB(12, 12, 0, 0),
+                                    const EdgeInsets.fromLTRB(12, 12, 0, 0),
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(12),
                                 ),
@@ -234,7 +238,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                           ),
                         ),
-                        SizedBox(height: 20),
+                        const SizedBox(height: 20),
                         _buildCard(
                           title: 'Sélectionnez un Élément Constitutif',
                           child: isLoadingElements
@@ -256,8 +260,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                     dropdownSearchDecoration: InputDecoration(
                                       labelText:
                                           "Sélectionnez un Élément Constitutif",
-                                      contentPadding:
-                                          EdgeInsets.fromLTRB(12, 12, 0, 0),
+                                      contentPadding: const EdgeInsets.fromLTRB(
+                                          12, 12, 0, 0),
                                       border: OutlineInputBorder(
                                         borderRadius: BorderRadius.circular(12),
                                       ),
@@ -277,19 +281,31 @@ class _HomeScreenState extends State<HomeScreen> {
                         isLoadingYears
                             ? _buildShimmerEffect()
                             : schoolYears.isEmpty
-                                ? Column(
-                                    children: [
-                                      const Text(
-                                        'No school years available. Please add one.',
-                                        style: TextStyle(
-                                            fontSize: 18, color: Colors.red),
-                                      ),
-                                      SizedBox(height: 20),
-                                      ElevatedButton(
-                                        onPressed: _openSchoolYearDialog,
-                                        child: Text('Add School Year'),
-                                      ),
-                                    ],
+                                ? Center(
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        const Center(
+                                          child: Text(
+                                            'Aucune anne scolaire trouvée',
+                                            style: TextStyle(
+                                                fontSize: 10,
+                                                color: Colors.grey),
+                                          ),
+                                        ),
+                                        const SizedBox(height: 20),
+                                        ElevatedButton(
+                                          onPressed: _openSchoolYearDialog,
+                                          style: ButtonStyle(
+                                              backgroundColor:
+                                                  WidgetStateProperty.all<
+                                                      Color>(Colors.blue)),
+                                          child:
+                                              const Text('Ajouter une Année'),
+                                        ),
+                                      ],
+                                    ),
                                   )
                                 : Column(
                                     children: [
@@ -315,16 +331,16 @@ class _HomeScreenState extends State<HomeScreen> {
                                           },
                                         ),
                                       ),
-                                      SizedBox(height: 16),
+                                      const SizedBox(height: 16),
                                       Row(
                                         mainAxisAlignment:
                                             MainAxisAlignment.center,
                                         children: List.generate(
                                           schoolYears.length,
                                           (index) => AnimatedContainer(
-                                            duration:
-                                                Duration(milliseconds: 300),
-                                            margin: EdgeInsets.symmetric(
+                                            duration: const Duration(
+                                                milliseconds: 300),
+                                            margin: const EdgeInsets.symmetric(
                                                 horizontal: 4),
                                             width:
                                                 currentIndex == index ? 12 : 8,
@@ -339,14 +355,17 @@ class _HomeScreenState extends State<HomeScreen> {
                                           ),
                                         ),
                                       ),
-                                      SizedBox(height: 20),
-                                      ElevatedButton(
+                                      const SizedBox(height: 5),
+                                      IconButton(
                                         onPressed: _openSchoolYearDialog,
-                                        child: Text('Add School Year'),
-                                      ),
+                                        icon: const Icon(
+                                            Icons.add_circle_outline),
+                                        iconSize: 50,
+                                        color: Colors.blueGrey,
+                                      )
                                     ],
                                   ),
-                        SizedBox(height: 20),
+                        const SizedBox(height: 20),
                       ],
                     ),
                   ),
