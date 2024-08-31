@@ -462,4 +462,38 @@ class DatabaseConfig {
 
     return attendanceList;
   }
+
+  Future<void>  insertApi(String api) async{
+    final db = await database  ;
+    db.insert(
+        'tapi',
+      {
+        'url' : api
+      }
+    );
+  }
+
+  Future<void> insertOrUpdateApi(String api) async {
+    final db = await database;
+
+    // Query the database to check if there is an existing record
+    final List<Map<String, dynamic>> existingRecords = await db.query('tapi');
+
+    if (existingRecords.isNotEmpty) {
+      // There is an existing record, update it with the new URL
+      await db.update(
+        'tapi',
+        {'url': api},
+        where: 'id = ?', // Assuming there's an 'id' column
+        whereArgs: [existingRecords.first['id']], // Use the id of the existing record
+      );
+    } else {
+      // No existing record, insert the new one
+      await db.insert(
+        'tapi',
+        {'url': api},
+      );
+    }
+  }
+
 }

@@ -1,9 +1,4 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:path/path.dart';
-
-import 'Features/Attendance/Services/synchronisation.dart';
-import 'error_page.dart';
 
 class Menu extends StatelessWidget {
   const Menu({super.key});
@@ -40,23 +35,23 @@ class Menu extends StatelessWidget {
             ),
           ),
           ListTile(
-            leading: Icon(Icons.home),
-            title: Text('Home'),
+            leading: const Icon(Icons.home),
+            title: const Text('Home'),
             onTap: () {
               Navigator.pop(context);
             },
           ),
           ListTile(
-            leading: Icon(Icons.school),
-            title: Text('School Years'),
+            leading: const Icon(Icons.school),
+            title: const Text('School Years'),
             onTap: () {
 // Add your navigation logic here
               Navigator.pop(context);
             },
           ),
           ListTile(
-            leading: Icon(Icons.settings),
-            title: Text('Settings'),
+            leading: const  Icon(Icons.settings),
+            title: const Text('Settings'),
             onTap: () {
 // Add your navigation logic here
               Navigator.pop(context);
